@@ -3,6 +3,7 @@ package com.amazon.ata.handlingexceptions;
 import java.math.BigDecimal;
 
 import com.amazon.ata.handlingexceptions.exceptions.InsufficientFundsException;
+import com.amazon.ata.handlingexceptions.exceptions.TransactionException;
 
 /**
  * This class represents a checking bank account, which includes methods that 
@@ -37,9 +38,13 @@ public class CheckingAccount implements BankAccount {
      * @return value of account after the deposit
      */
     @Override
-    public BigDecimal deposit(BigDecimal amount) {
+    public BigDecimal deposit(BigDecimal amount) throws TransactionException {
         // TODO: Implement
-        return BigDecimal.ZERO;
+        // Validate the amount
+        validator.validate(amount);
+        // Add the amount to the balance
+        balance = balance.add(amount);
+        return balance;
     }
 
     /**
@@ -50,13 +55,22 @@ public class CheckingAccount implements BankAccount {
      * @throws InsufficientFundsException if account does not have enough funds to withdraw amount
      */
     @Override
-    public BigDecimal withdraw(BigDecimal amount) {
+    public BigDecimal withdraw(BigDecimal amount) throws TransactionException {
         // TODO: implement
-        return BigDecimal.ZERO;
+        // Validate the amount
+        validator.validate(amount);
+        // Check if the balance is sufficient
+        if (balance.compareTo(amount) < 0) {
+            throw new InsufficientFundsException("Insufficient funds in account");
+        }
+        // Subtract the amount from the balance
+        balance = balance.subtract(amount);
+        return balance;
     }
 
     @Override
     public BigDecimal getBalance() {
         // TODO: implement
-        return BigDecimal.ZERO;    }
+        return balance;
+    }
 }
